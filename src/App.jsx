@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react";
 import { ITENS_DEMO, TIMES } from "./dados/csv.js";
+import PainelCalculos from "./componentes/PainelCalculos.jsx";
+
+// A data de referência é sempre um valor passado às funções de cálculo.
+// Aqui fica fixa na data dos dados demonstrativos, não no relógio do sistema.
+const DATA_REFERENCIA = "2026-10-13";
+const JANELA_THROUGHPUT_DIAS = 28;
 
 const ABAS = [
   {
@@ -39,6 +45,7 @@ const COLUNAS = [
 export default function App() {
   const [time, setTime] = useState(TIMES[0]);
   const [aba, setAba] = useState("dashboard");
+  const [calculosAbertos, setCalculosAbertos] = useState(false);
 
   const itensDoTime = useMemo(() => ITENS_DEMO.filter((i) => i.time === time), [time]);
   const atual = ABAS.find((a) => a.id === aba);
@@ -122,12 +129,23 @@ export default function App() {
           <p className="max-w-prose" style={{ color: "var(--muted)" }}>
             {atual.texto}
           </p>
-          <p
-            className="data mt-5 inline-block rounded px-2.5 py-1 text-xs"
-            style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
-          >
-            {time} · {itensDoTime.length} itens carregados
-          </p>
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <p
+              className="data inline-block rounded px-2.5 py-1 text-xs"
+              style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
+            >
+              {time} · {itensDoTime.length} itens carregados
+            </p>
+            <button
+              type="button"
+              aria-haspopup="dialog"
+              onClick={() => setCalculosAbertos(true)}
+              className="rounded-md border px-3 py-1.5 text-sm font-medium"
+              style={{ borderColor: "var(--accent)", color: "var(--accent)", background: "var(--surface)" }}
+            >
+              Ver cálculos
+            </button>
+          </div>
         </section>
 
         <section
@@ -181,6 +199,16 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      {calculosAbertos && (
+        <PainelCalculos
+          time={time}
+          itens={itensDoTime}
+          dataReferencia={DATA_REFERENCIA}
+          janelaDias={JANELA_THROUGHPUT_DIAS}
+          onFechar={() => setCalculosAbertos(false)}
+        />
+      )}
     </div>
   );
 }
