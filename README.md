@@ -5,10 +5,23 @@ Não é um gerenciador de tarefas.
 
 Promessa do MVP: identificar os três maiores riscos da sprint e indicar as ações antes que prejudiquem a entrega.
 
-## Estado atual (incremento 1)
+## Estado atual (incremento 2)
 
-- `agilemind-ai.html`: página única em React + Tailwind (via CDN) com cabeçalho, seletor de time, faixa "Dados demonstrativos · não são dados reais" e três abas (Dashboard Gerencial, Radar de Riscos, Agile Coach), ainda com texto de apresentação.
+Projeto Vite + React + Tailwind + Recharts, pronto para deploy no Vercel.
+
+- `src/App.jsx`: cabeçalho com seletor de time, faixa "Dados demonstrativos · não são dados reais" e três abas (Dashboard Gerencial, Radar de Riscos, Agile Coach), ainda com texto de apresentação.
+- `src/dados/csv.js`: converte o CSV em lista de objetos.
 - `dados/itens_demo.csv`: dados demonstrativos (UTF-8), 29 itens de 2 times.
+
+## Como rodar
+
+```
+npm install
+npm run dev      # desenvolvimento
+npm run build    # build de produção em dist/
+```
+
+No Vercel: framework Vite, comando `npm run build`, pasta de saída `dist`.
 
 ## Regras de arquitetura
 
