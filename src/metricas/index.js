@@ -11,6 +11,7 @@ import { somarDias } from "./datas.js";
 
 export * from "./metricas.js";
 export * from "./datas.js";
+export { calcularDashboard } from "./dashboard.js";
 
 /**
  * Calcula todas as métricas de um time e devolve também os valores por item,

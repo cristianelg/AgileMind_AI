@@ -35,7 +35,22 @@ export function diasEntre(inicioIso, fimIso) {
   return diaDoCalendario(fimIso) - diaDoCalendario(inicioIso);
 }
 
+/** Data AAAA-MM-DD de um número de dias desde 1970-01-01 (o inverso de diaDoCalendario). */
+export function isoDoDia(dia) {
+  return new Date(dia * MS_POR_DIA).toISOString().slice(0, 10);
+}
+
 /** Soma (ou subtrai, com n negativo) dias corridos a uma data AAAA-MM-DD. */
 export function somarDias(iso, n) {
-  return new Date((diaDoCalendario(iso) + n) * MS_POR_DIA).toISOString().slice(0, 10);
+  return isoDoDia(diaDoCalendario(iso) + n);
+}
+
+/** Dia da semana com segunda = 0 e domingo = 6. 1970-01-01 foi uma quinta-feira. */
+export function diaDaSemana(iso) {
+  return (((diaDoCalendario(iso) + 3) % 7) + 7) % 7;
+}
+
+/** Segunda-feira da semana (segunda a domingo) que contém a data. */
+export function inicioDaSemana(iso) {
+  return somarDias(iso, -diaDaSemana(iso));
 }

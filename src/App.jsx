@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ITENS_DEMO, TIMES } from "./dados/csv.js";
 import PainelCalculos from "./componentes/PainelCalculos.jsx";
+import Dashboard from "./componentes/Dashboard.jsx";
 
 // A data de referência é sempre um valor passado às funções de cálculo.
 // Aqui fica fixa na data dos dados demonstrativos, não no relógio do sistema.
@@ -64,7 +65,7 @@ export default function App() {
           Dados demonstrativos · não são dados reais
         </div>
 
-        <div className="mx-auto w-full max-w-5xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="mx-auto w-full max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <h1 className="text-lg font-semibold leading-tight">AgileMind AI</h1>
             <p className="text-xs" style={{ color: "var(--muted)" }}>
@@ -91,7 +92,7 @@ export default function App() {
           </div>
         </div>
 
-        <nav aria-label="Seções" className="mx-auto w-full max-w-5xl px-4">
+        <nav aria-label="Seções" className="mx-auto w-full max-w-6xl px-4">
           <div role="tablist" className="flex gap-1 overflow-x-auto">
             {ABAS.map((a) => {
               const ativa = a.id === aba;
@@ -117,36 +118,45 @@ export default function App() {
         </nav>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl px-4 py-6 flex-1">
-        <section
-          id="painel"
-          role="tabpanel"
-          aria-labelledby={"aba-" + aba}
-          className="rounded-lg border p-5"
-          style={{ background: "var(--surface)", borderColor: "var(--line)" }}
-        >
-          <h2 className="text-base font-semibold mb-2">{atual.nome}</h2>
-          <p className="max-w-prose" style={{ color: "var(--muted)" }}>
-            {atual.texto}
+      <main className="mx-auto w-full max-w-6xl px-4 py-6 flex-1">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <p
+            className="data inline-block rounded px-2.5 py-1 text-xs"
+            style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
+          >
+            {time} · {itensDoTime.length} itens carregados
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <p
-              className="data inline-block rounded px-2.5 py-1 text-xs"
-              style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            onClick={() => setCalculosAbertos(true)}
+            className="rounded-md border px-3 py-1.5 text-sm font-medium"
+            style={{ borderColor: "var(--accent)", color: "var(--accent)", background: "var(--surface)" }}
+          >
+            Ver cálculos
+          </button>
+        </div>
+
+        <div id="painel" role="tabpanel" aria-labelledby={"aba-" + aba}>
+          {aba === "dashboard" ? (
+            <Dashboard
+              time={time}
+              itens={itensDoTime}
+              dataReferencia={DATA_REFERENCIA}
+              janelaThroughput={JANELA_THROUGHPUT_DIAS}
+            />
+          ) : (
+            <section
+              className="rounded-lg border p-5"
+              style={{ background: "var(--surface)", borderColor: "var(--line)" }}
             >
-              {time} · {itensDoTime.length} itens carregados
-            </p>
-            <button
-              type="button"
-              aria-haspopup="dialog"
-              onClick={() => setCalculosAbertos(true)}
-              className="rounded-md border px-3 py-1.5 text-sm font-medium"
-              style={{ borderColor: "var(--accent)", color: "var(--accent)", background: "var(--surface)" }}
-            >
-              Ver cálculos
-            </button>
-          </div>
-        </section>
+              <h2 className="text-base font-semibold mb-2">{atual.nome}</h2>
+              <p className="max-w-prose" style={{ color: "var(--muted)" }}>
+                {atual.texto}
+              </p>
+            </section>
+          )}
+        </div>
 
         <section
           aria-labelledby="titulo-itens"

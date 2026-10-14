@@ -14,7 +14,7 @@
  * - P85: nearest-rank, posição ⌈0,85 × n⌉ da lista ordenada.
  */
 
-import { diaDoCalendario, diasEntre, somarDias } from "./datas.js";
+import { diaDoCalendario, diasEntre, inicioDaSemana, isoDoDia, somarDias } from "./datas.js";
 
 /**
  * Item em WIP na data de referência: já iniciado até ela e ainda sem conclusão.
@@ -40,11 +40,26 @@ function concluidoAte(item, dataReferencia) {
   return Boolean(item.concluido_em) && diaDoCalendario(item.concluido_em) <= diaDoCalendario(dataReferencia);
 }
 
-/** Cycle Time por item concluído até a data de referência: [{ id, dias }]. */
-export function cycleTime(itens, dataReferencia) {
+/**
+ * Cycle Time por item concluído até a data de referência.
+ * Com `desde` (AAAA-MM-DD), só entram itens concluídos nessa data ou depois.
+ * Devolve [{ id, tipo, dias, concluidoEm }].
+ */
+export function cycleTime(itens, dataReferencia, desde = null) {
+  const limiteInferior = desde === null ? -Infinity : diaDoCalendario(desde);
   return itens
-    .filter((item) => item.iniciado_em && concluidoAte(item, dataReferencia))
-    .map((item) => ({ id: item.id, dias: diasEntre(item.iniciado_em, item.concluido_em) }));
+    .filter(
+      (item) =>
+        item.iniciado_em &&
+        concluidoAte(item, dataReferencia) &&
+        diaDoCalendario(item.concluido_em) >= limiteInferior
+    )
+    .map((item) => ({
+      id: item.id,
+      tipo: item.tipo,
+      dias: diasEntre(item.iniciado_em, item.concluido_em),
+      concluidoEm: item.concluido_em,
+    }));
 }
 
 /** Lead Time por item concluído até a data de referência: [{ id, dias }]. */
@@ -104,4 +119,78 @@ export function detalharPercentil85(valores) {
 /** P85 de uma lista de números. Não depende de data. */
 export function percentil85(valores) {
   return detalharPercentil85(valores).valor;
+}
+
+// ---------------------------------------------------------------------------
+// Filtros e métricas do Dashboard Gerencial
+// ---------------------------------------------------------------------------
+
+/** Filtra por tipo ("história" ou "bug"). "todos" ou vazio não filtra. */
+export function filtrarPorTipo(itens, tipo) {
+  return !tipo || tipo === "todos" ? itens : itens.filter((item) => item.tipo === tipo);
+}
+
+/**
+ * Primeiro dia de um período de periodoDias dias corridos que termina na data
+ * de referência, incluindo-a. periodoDias nulo significa sem limite inferior.
+ */
+export function inicioDoPeriodo(dataReferencia, periodoDias) {
+  return periodoDias === null || periodoDias === undefined
+    ? null
+    : somarDias(dataReferencia, -(periodoDias - 1));
+}
+
+/** Bugs em andamento: itens em WIP com tipo "bug". */
+export function bugsEmAndamento(itens, dataReferencia) {
+  return itensEmWip(itens, dataReferencia).filter((item) => item.tipo === "bug").length;
+}
+
+/** Percentual do WIP ocupado por bugs (0 a 100). Nulo quando o WIP é zero. */
+export function percentualWipBugs(itens, dataReferencia) {
+  const total = wip(itens, dataReferencia);
+  return total === 0 ? null : (bugsEmAndamento(itens, dataReferencia) / total) * 100;
+}
+
+/**
+ * Throughput por semana (segunda a domingo): [{ inicio, fim, total, parcial }].
+ * Inclui semanas sem conclusões, com total 0. `parcial` marca a semana que
+ * começa antes do período ou termina depois da data de referência.
+ * Sem `desde`, a série começa na semana da primeira conclusão.
+ */
+export function throughputSemanal(itens, dataReferencia, desde = null) {
+  const ref = diaDoCalendario(dataReferencia);
+  const limiteInferior = desde === null ? -Infinity : diaDoCalendario(desde);
+  const concluidos = itens
+    .filter((item) => item.concluido_em)
+    .map((item) => diaDoCalendario(item.concluido_em))
+    .filter((dia) => dia <= ref && dia >= limiteInferior);
+
+  let inicioBusca = desde;
+  if (inicioBusca === null) {
+    if (concluidos.length === 0) return [];
+    inicioBusca = isoDoDia(Math.min(...concluidos));
+  }
+
+  const semanas = [];
+  const ultima = diaDoCalendario(inicioDaSemana(dataReferencia));
+  for (let ini = diaDoCalendario(inicioDaSemana(inicioBusca)); ini <= ultima; ini += 7) {
+    const fim = ini + 6;
+    semanas.push({
+      inicio: isoDoDia(ini),
+      fim: isoDoDia(fim),
+      total: concluidos.filter((dia) => dia >= ini && dia <= fim).length,
+      parcial: (desde !== null && ini < limiteInferior) || fim > ref,
+    });
+  }
+  return semanas;
+}
+
+/**
+ * Pontos do gráfico de dispersão: um por item concluído, ordenados por data.
+ * [{ id, tipo, dias, concluidoEm, dia }], com `dia` como dia de calendário.
+ */
+export function dispersaoCycleTime(itens, dataReferencia, desde = null) {
+  return cycleTime(itens, dataReferencia, desde)
+    .map((c) => ({ ...c, dia: diaDoCalendario(c.concluidoEm) }))
+    .sort((a, b) => a.dia - b.dia || a.id.localeCompare(b.id));
 }
