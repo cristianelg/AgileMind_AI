@@ -59,7 +59,7 @@ const PESO_SEVERIDADE = { alta: 0, media: 1 };
 export const ROTULO_SEVERIDADE = { alta: "Alta", media: "Média" };
 
 const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
-const dias = (n) => plural(fmtNum(n), "dia", "dias");
+const dias = (n) => `${fmtNum(n)} ${n === 1 ? "dia" : "dias"}`;
 
 function evidenciaDoItem(item) {
   return [

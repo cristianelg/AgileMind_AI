@@ -1,0 +1,30 @@
+id,time,tipo,titulo,status,criado_em,iniciado_em,concluido_em,bloqueado,bloqueado_desde,story_points,adicionado_apos_inicio
+ORB-101,Squad Órbita,história,Checkout com Pix,Concluído,2026-09-02,2026-09-08,2026-09-12,nao,,5,nao
+ORB-102,Squad Órbita,história,Cadastro de endereço,Concluído,2026-09-03,2026-09-10,2026-09-16,nao,,3,nao
+ORB-103,Squad Órbita,bug,Erro no cupom de desconto,Concluído,2026-09-15,2026-09-16,2026-09-17,nao,,1,nao
+ORB-104,Squad Órbita,história,Filtro de pedidos,Concluído,2026-09-10,2026-09-17,2026-09-25,nao,,8,nao
+ORB-105,Squad Órbita,história,Notificação por e-mail,Concluído,2026-09-12,2026-09-22,2026-09-26,nao,,3,nao
+ORB-106,Squad Órbita,bug,Timeout no login,Concluído,2026-09-24,2026-09-24,2026-09-29,nao,,2,nao
+ORB-107,Squad Órbita,história,Rastreio do pedido,Concluído,2026-09-20,2026-10-01,2026-10-07,nao,,5,nao
+ORB-108,Squad Órbita,bug,Preço duplicado no carrinho,Concluído,2026-10-02,2026-10-03,2026-10-06,nao,,2,sim
+ORB-109,Squad Órbita,história,Parcelamento no cartão,Em andamento,2026-09-25,2026-10-01,,sim,2026-10-08,8,nao
+ORB-110,Squad Órbita,história,Tela de devolução,Code Review,2026-09-28,2026-10-05,,nao,,5,nao
+ORB-111,Squad Órbita,bug,Falha no cálculo de frete,Em andamento,2026-10-06,2026-10-08,,nao,,2,sim
+ORB-112,Squad Órbita,história,Histórico de compras,Teste,2026-09-29,2026-10-06,,nao,,3,nao
+ORB-113,Squad Órbita,bug,Imagem quebrada no app,Em andamento,2026-10-09,2026-10-10,,nao,,1,sim
+ORB-114,Squad Órbita,história,Avaliação de produto,Backlog,2026-10-01,,,nao,,5,nao
+ORB-115,Squad Órbita,história,Lista de desejos,Em andamento,2026-10-02,2026-10-07,,sim,2026-10-12,3,nao
+FAR-201,Squad Farol,história,Integração com ERP,Concluído,2026-08-28,2026-09-01,2026-09-09,nao,,,nao
+FAR-202,Squad Farol,bug,Relatório lento,Concluído,2026-09-04,2026-09-05,2026-09-08,nao,,,nao
+FAR-203,Squad Farol,história,Exportar CSV de vendas,Concluído,2026-09-08,2026-09-11,2026-09-18,nao,,,nao
+FAR-204,Squad Farol,bug,Erro de fuso horário,Concluído,2026-09-15,2026-09-16,2026-09-18,nao,,,nao
+FAR-205,Squad Farol,história,Painel de estoque,Concluído,2026-09-14,2026-09-21,2026-10-02,nao,,,nao
+FAR-206,Squad Farol,bug,Sincronização falhando,Concluído,2026-09-29,2026-09-30,2026-10-03,nao,,,nao
+FAR-207,Squad Farol,história,API de preços,Concluído,2026-09-22,2026-09-29,2026-10-08,nao,,,nao
+FAR-208,Squad Farol,bug,Nota fiscal duplicada,Em andamento,2026-10-05,2026-10-06,,sim,2026-10-07,,nao
+FAR-209,Squad Farol,história,Webhook de pedidos,Code Review,2026-09-24,2026-09-30,,nao,,,nao
+FAR-210,Squad Farol,bug,Login SSO intermitente,Em andamento,2026-10-08,2026-10-09,,nao,,,nao
+FAR-211,Squad Farol,bug,Campo obrigatório ausente,Teste,2026-10-07,2026-10-08,,nao,,,nao
+FAR-212,Squad Farol,história,Auditoria de acessos,Em andamento,2026-10-01,2026-10-05,,nao,,,nao
+FAR-213,Squad Farol,bug,Lentidão no checkout,Em andamento,2026-10-10,2026-10-12,,nao,,,nao
+FAR-214,Squad Farol,história,Dashboard de vendas,Backlog,2026-10-03,,,nao,,,nao
