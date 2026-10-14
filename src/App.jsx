@@ -22,6 +22,20 @@ const ABAS = [
   },
 ];
 
+const COLUNAS = [
+  { chave: "id", titulo: "ID", dado: true },
+  { chave: "tipo", titulo: "Tipo" },
+  { chave: "titulo", titulo: "Título" },
+  { chave: "status", titulo: "Status" },
+  { chave: "criado_em", titulo: "Criado em", dado: true },
+  { chave: "iniciado_em", titulo: "Iniciado em", dado: true },
+  { chave: "concluido_em", titulo: "Concluído em", dado: true },
+  { chave: "bloqueado", titulo: "Bloqueado" },
+  { chave: "bloqueado_desde", titulo: "Bloqueado desde", dado: true },
+  { chave: "story_points", titulo: "Pontos", numero: true, dado: true },
+  { chave: "adicionado_apos_inicio", titulo: "Adic. após início" },
+];
+
 export default function App() {
   const [time, setTime] = useState(TIMES[0]);
   const [aba, setAba] = useState("dashboard");
@@ -114,6 +128,57 @@ export default function App() {
           >
             {time} · {itensDoTime.length} itens carregados
           </p>
+        </section>
+
+        <section
+          aria-labelledby="titulo-itens"
+          className="mt-6 rounded-lg border"
+          style={{ background: "var(--surface)", borderColor: "var(--line)" }}
+        >
+          <div className="px-5 pt-4 pb-3">
+            <h2 id="titulo-itens" className="text-base font-semibold">
+              Itens do time
+            </h2>
+            <p className="text-xs" style={{ color: "var(--muted)" }}>
+              {time} · {itensDoTime.length} itens · dados demonstrativos
+            </p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm" style={{ borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ color: "var(--muted)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
+                  {COLUNAS.map((c) => (
+                    <th
+                      key={c.chave}
+                      scope="col"
+                      className={"px-3 py-2 text-xs font-medium whitespace-nowrap " + (c.numero ? "text-right" : "text-left")}
+                    >
+                      {c.titulo}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {itensDoTime.map((item) => (
+                  <tr key={item.id} style={{ borderBottom: "1px solid var(--line)" }}>
+                    {COLUNAS.map((c) => (
+                      <td
+                        key={c.chave}
+                        className={
+                          "px-3 py-2 whitespace-nowrap " +
+                          (c.numero ? "text-right " : "") +
+                          (c.dado ? "data text-xs" : "")
+                        }
+                        style={c.chave === "id" ? { color: "var(--accent)" } : undefined}
+                      >
+                        {item[c.chave] ?? "—"}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </main>
     </div>
