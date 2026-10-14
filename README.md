@@ -66,3 +66,7 @@ Upload de arquivo ou texto colado, validado linha a linha em `src/dados/validarC
 ## Radar de Riscos (incremento 7)
 
 Sem IA. `src/riscos/regras.js` (função pura) avalia R1 a R5 sobre as métricas do motor, com a data de referência como parâmetro. R1 e R2 geram um risco por item, R3, R4 e R5 um risco por regra. Ordem: severidade (alta antes de média), depois código da regra, depois magnitude dentro da regra. Os três primeiros aparecem em "Os 3 riscos da sprint". O painel "Regras" muda os limites (o limite de WIP é o mesmo do Dashboard). Responsável e prazo ficam só em memória. R5 considera todos os itens com adicionado_apos_inicio = sim, em qualquer status. O P85 de R1 usa todos os itens concluídos do time, sem filtro de tipo ou período.
+
+## Agile Coach (incremento 8)
+
+A IA roda fora do app. A aba monta o pacote de contexto em JSON (`src/coach/pacote.js`: métricas, limites usados, riscos disparados, linhas rejeitadas na importação, sem carimbo de tempo), mostra o prompt com o pacote no lugar de `{{PACOTE_JSON}}` (`src/coach/prompt.js`) e guarda planos PDCA em memória (`src/coach/pdca.js`). O app não envia nada para fora. **Pendente:** o texto oficial do prompt; ele fica em `PROMPT_ANALISE` e `PROMPT_PENDENTE` deve virar `false` quando for cadastrado.

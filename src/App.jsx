@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ITENS_DEMO } from "./dados/csv.js";
 import { validarCsv } from "./dados/validarCsv.js";
 import ImportarCsv from "./componentes/ImportarCsv.jsx";
 import RadarRiscos from "./componentes/RadarRiscos.jsx";
+import AgileCoach from "./componentes/AgileCoach.jsx";
 import { TEXTOS_PADRAO } from "./riscos/config.js";
 import PainelCalculos from "./componentes/PainelCalculos.jsx";
 import Dashboard from "./componentes/Dashboard.jsx";
@@ -43,6 +44,9 @@ export default function App() {
   // Limites das regras: o limite de WIP é um só, usado pelo Dashboard e pelo Radar de Riscos.
   const [textosRegras, setTextosRegras] = useState(TEXTOS_PADRAO);
   const [anotacoes, setAnotacoes] = useState({});
+  // Planos PDCA do Agile Coach, só em memória.
+  const [planos, setPlanos] = useState([]);
+  const proximoPlano = useRef(1);
   const [aba, setAba] = useState("dashboard");
   const [calculosAbertos, setCalculosAbertos] = useState(false);
 
@@ -60,7 +64,7 @@ export default function App() {
     const avisos = texto.includes("\uFFFD")
       ? ["O texto tem caracteres ilegíveis. O arquivo provavelmente não está em UTF-8, salve-o assim e importe de novo."]
       : [];
-    if (aplicado) setDados({ itens: resultado.itens, demo: false });
+    if (aplicado) setDados({ itens: resultado.itens, demo: false, nome, resultado });
     setRelatorio({ nome, leituraFalhou: false, avisos, aplicado, resultado });
   }
 
@@ -86,7 +90,7 @@ export default function App() {
         >
           {dados.demo
             ? "Dados demonstrativos · não são dados reais"
-            : `Dados importados de ${relatorio.nome} · ${dados.itens.length} ${dados.itens.length === 1 ? "item válido" : "itens válidos"}`}
+            : `Dados importados de ${dados.nome} · ${dados.itens.length} ${dados.itens.length === 1 ? "item válido" : "itens válidos"}`}
         </div>
 
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
@@ -157,6 +161,7 @@ export default function App() {
         <ImportarCsv
           relatorio={relatorio}
           origemDemo={dados.demo}
+          nomeEmUso={dados.nome}
           dataReferencia={dataReferencia}
           onDataReferencia={setDataReferencia}
           onImportar={importar}
@@ -182,6 +187,18 @@ export default function App() {
               onTextos={setTextosRegras}
               anotacoes={anotacoes}
               onAnotacao={(chave, parcial) => setAnotacoes((a) => ({ ...a, [chave]: { ...a[chave], ...parcial } }))}
+            />
+          ) : aba === "coach" ? (
+            <AgileCoach
+              time={time}
+              itens={itensDoTime}
+              dataReferencia={dataReferencia}
+              textosRegras={textosRegras}
+              origem={dados}
+              planos={planos}
+              onAdicionarPlano={(p) => setPlanos((l) => [...l, { ...p, id: proximoPlano.current++ }])}
+              onAtualizarPlano={(id, parcial) => setPlanos((l) => l.map((p) => (p.id === id ? { ...p, ...parcial } : p)))}
+              onRemoverPlano={(id) => setPlanos((l) => l.filter((p) => p.id !== id))}
             />
           ) : (
             <section

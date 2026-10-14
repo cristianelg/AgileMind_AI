@@ -10,6 +10,7 @@ const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
 export default function ImportarCsv({
   relatorio,
   origemDemo,
+  nomeEmUso,
   dataReferencia,
   onDataReferencia,
   onImportar,
@@ -47,7 +48,7 @@ export default function ImportarCsv({
         <div className="min-w-0">
           <h2 className="text-sm font-semibold">Dados do time</h2>
           <p className="text-sm" style={{ color: "var(--muted)" }}>
-            {origemDemo ? "Usando o CSV de exemplo (dados demonstrativos)." : `Usando o CSV importado: ${relatorio.nome}.`}
+            {origemDemo ? "Usando o CSV de exemplo (dados demonstrativos)." : `Usando o CSV importado: ${nomeEmUso}.`}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
