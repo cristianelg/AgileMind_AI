@@ -1,0 +1,221 @@
+<title>AgileMind AI</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-is/18.3.1/umd/react-is.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+  /* Layout: cabeçalho fixo com faixa de aviso, abas horizontais e painel único de conteúdo. */
+  :root {
+    --bg: #f5f7f8;
+    --surface: #ffffff;
+    --fg: #14232b;
+    --muted: #55666f;
+    --line: #d6dee2;
+    --accent: #0b6e79;
+    --accent-soft: #dcf0f2;
+    --warn-bg: #fff1c7;
+    --warn-fg: #5c4300;
+    --warn-line: #e8c766;
+    --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1a20; --surface: #15262e; --fg: #e6eef1; --muted: #9bb0b9; --line: #2a404a;
+      --accent: #4fc3cf; --accent-soft: #123940;
+      --warn-bg: #3d3210; --warn-fg: #ffe28a; --warn-line: #7a6320;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1a20; --surface: #15262e; --fg: #e6eef1; --muted: #9bb0b9; --line: #2a404a;
+    --accent: #4fc3cf; --accent-soft: #123940;
+    --warn-bg: #3d3210; --warn-fg: #ffe28a; --warn-line: #7a6320;
+    color-scheme: dark;
+  }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+  .data { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+/* ---------- Dados demonstrativos (itens_demo.csv, 29 linhas) ---------- */
+const CSV_DEMO = `id,time,tipo,titulo,status,criado_em,iniciado_em,concluido_em,bloqueado,bloqueado_desde,story_points,adicionado_apos_inicio
+ORB-101,Squad Órbita,história,Checkout com Pix,Concluído,2026-09-02,2026-09-08,2026-09-12,nao,,5,nao
+ORB-102,Squad Órbita,história,Cadastro de endereço,Concluído,2026-09-03,2026-09-10,2026-09-16,nao,,3,nao
+ORB-103,Squad Órbita,bug,Erro no cupom de desconto,Concluído,2026-09-15,2026-09-16,2026-09-17,nao,,1,nao
+ORB-104,Squad Órbita,história,Filtro de pedidos,Concluído,2026-09-10,2026-09-17,2026-09-25,nao,,8,nao
+ORB-105,Squad Órbita,história,Notificação por e-mail,Concluído,2026-09-12,2026-09-22,2026-09-26,nao,,3,nao
+ORB-106,Squad Órbita,bug,Timeout no login,Concluído,2026-09-24,2026-09-24,2026-09-29,nao,,2,nao
+ORB-107,Squad Órbita,história,Rastreio do pedido,Concluído,2026-09-20,2026-10-01,2026-10-07,nao,,5,nao
+ORB-108,Squad Órbita,bug,Preço duplicado no carrinho,Concluído,2026-10-02,2026-10-03,2026-10-06,nao,,2,sim
+ORB-109,Squad Órbita,história,Parcelamento no cartão,Em andamento,2026-09-25,2026-10-01,,sim,2026-10-08,8,nao
+ORB-110,Squad Órbita,história,Tela de devolução,Code Review,2026-09-28,2026-10-05,,nao,,5,nao
+ORB-111,Squad Órbita,bug,Falha no cálculo de frete,Em andamento,2026-10-06,2026-10-08,,nao,,2,sim
+ORB-112,Squad Órbita,história,Histórico de compras,Teste,2026-09-29,2026-10-06,,nao,,3,nao
+ORB-113,Squad Órbita,bug,Imagem quebrada no app,Em andamento,2026-10-09,2026-10-10,,nao,,1,sim
+ORB-114,Squad Órbita,história,Avaliação de produto,Backlog,2026-10-01,,,nao,,5,nao
+ORB-115,Squad Órbita,história,Lista de desejos,Em andamento,2026-10-02,2026-10-07,,sim,2026-10-12,3,nao
+FAR-201,Squad Farol,história,Integração com ERP,Concluído,2026-08-28,2026-09-01,2026-09-09,nao,,,nao
+FAR-202,Squad Farol,bug,Relatório lento,Concluído,2026-09-04,2026-09-05,2026-09-08,nao,,,nao
+FAR-203,Squad Farol,história,Exportar CSV de vendas,Concluído,2026-09-08,2026-09-11,2026-09-18,nao,,,nao
+FAR-204,Squad Farol,bug,Erro de fuso horário,Concluído,2026-09-15,2026-09-16,2026-09-18,nao,,,nao
+FAR-205,Squad Farol,história,Painel de estoque,Concluído,2026-09-14,2026-09-21,2026-10-02,nao,,,nao
+FAR-206,Squad Farol,bug,Sincronização falhando,Concluído,2026-09-29,2026-09-30,2026-10-03,nao,,,nao
+FAR-207,Squad Farol,história,API de preços,Concluído,2026-09-22,2026-09-29,2026-10-08,nao,,,nao
+FAR-208,Squad Farol,bug,Nota fiscal duplicada,Em andamento,2026-10-05,2026-10-06,,sim,2026-10-07,,nao
+FAR-209,Squad Farol,história,Webhook de pedidos,Code Review,2026-09-24,2026-09-30,,nao,,,nao
+FAR-210,Squad Farol,bug,Login SSO intermitente,Em andamento,2026-10-08,2026-10-09,,nao,,,nao
+FAR-211,Squad Farol,bug,Campo obrigatório ausente,Teste,2026-10-07,2026-10-08,,nao,,,nao
+FAR-212,Squad Farol,história,Auditoria de acessos,Em andamento,2026-10-01,2026-10-05,,nao,,,nao
+FAR-213,Squad Farol,bug,Lentidão no checkout,Em andamento,2026-10-10,2026-10-12,,nao,,,nao
+FAR-214,Squad Farol,história,Dashboard de vendas,Backlog,2026-10-03,,,nao,,,nao`;
+
+/* CSV -> lista de objetos. Vazio vira null; story_points vira número. */
+function parseCsv(texto) {
+  const [cabecalho, ...linhas] = texto.trim().split(/\r?\n/);
+  const colunas = cabecalho.split(",");
+  return linhas.map((linha) => {
+    const celulas = linha.split(",");
+    const obj = {};
+    colunas.forEach((col, i) => {
+      const v = (celulas[i] ?? "").trim();
+      obj[col] = v === "" ? null : v;
+    });
+    obj.story_points = obj.story_points === null ? null : Number(obj.story_points);
+    return obj;
+  });
+}
+
+const ITENS = parseCsv(CSV_DEMO);
+const TIMES = [...new Set(ITENS.map((i) => i.time))];
+
+const ABAS = [
+  {
+    id: "dashboard",
+    nome: "Dashboard Gerencial",
+    titulo: "Dashboard Gerencial",
+    texto:
+      "Esta aba vai mostrar as métricas de fluxo do time selecionado: WIP, Cycle Time, Lead Time, Throughput e Aging, com P85. Todas calculadas por funções puras, a partir de uma data de referência informada.",
+  },
+  {
+    id: "riscos",
+    nome: "Radar de Riscos",
+    titulo: "Radar de Riscos",
+    texto:
+      "Esta aba vai listar os maiores riscos da sprint, cada um com a regra disparada, a evidência nos dados, o impacto possível e a ação recomendada. As regras serão explícitas e configuráveis.",
+  },
+  {
+    id: "coach",
+    nome: "Agile Coach",
+    titulo: "Agile Coach",
+    texto:
+      "Esta aba vai usar IA apenas para interpretar resultados já calculados, separando sempre o que é evidência (vem dos dados) do que é hipótese (precisa ser verificada).",
+  },
+];
+
+function App() {
+  const [time, setTime] = useState(TIMES[0]);
+  const [aba, setAba] = useState("dashboard");
+
+  const itensDoTime = useMemo(() => ITENS.filter((i) => i.time === time), [time]);
+  const atual = ABAS.find((a) => a.id === aba);
+
+  return (
+    <div className="min-h-full flex flex-col">
+      <header
+        className="sticky z-10 border-b"
+        style={{ top: "env(safe-area-inset-top, 0px)", background: "var(--surface)", borderColor: "var(--line)" }}
+      >
+        <div
+          role="status"
+          className="px-4 py-1.5 text-center text-xs font-medium tracking-wide border-b"
+          style={{ background: "var(--warn-bg)", color: "var(--warn-fg)", borderColor: "var(--warn-line)" }}
+        >
+          Dados demonstrativos · não são dados reais
+        </div>
+        <div className="mx-auto w-full max-w-5xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-lg font-semibold leading-tight" style={{ color: "var(--fg)" }}>
+              AgileMind AI
+            </h1>
+            <p className="text-xs" style={{ color: "var(--muted)" }}>
+              Os riscos da sua sprint, com evidência e ação
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="seletor-time" className="text-sm" style={{ color: "var(--muted)" }}>
+              Time
+            </label>
+            <select
+              id="seletor-time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="rounded-md border px-3 py-1.5 text-sm"
+              style={{ background: "var(--surface)", color: "var(--fg)", borderColor: "var(--line)" }}
+            >
+              {TIMES.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <nav aria-label="Seções" className="mx-auto w-full max-w-5xl px-4">
+          <div role="tablist" className="flex gap-1 overflow-x-auto">
+            {ABAS.map((a) => {
+              const ativa = a.id === aba;
+              return (
+                <button
+                  key={a.id}
+                  role="tab"
+                  id={"aba-" + a.id}
+                  aria-selected={ativa}
+                  aria-controls="painel"
+                  onClick={() => setAba(a.id)}
+                  className="whitespace-nowrap px-4 py-2.5 text-sm font-medium border-b-2 -mb-px"
+                  style={{
+                    color: ativa ? "var(--accent)" : "var(--muted)",
+                    borderColor: ativa ? "var(--accent)" : "transparent",
+                  }}
+                >
+                  {a.nome}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      </header>
+
+      <main className="mx-auto w-full max-w-5xl px-4 py-6 flex-1">
+        <section
+          id="painel"
+          role="tabpanel"
+          aria-labelledby={"aba-" + aba}
+          className="rounded-lg border p-5"
+          style={{ background: "var(--surface)", borderColor: "var(--line)" }}
+        >
+          <h2 className="text-base font-semibold mb-2">{atual.titulo}</h2>
+          <p className="max-w-prose" style={{ color: "var(--muted)" }}>{atual.texto}</p>
+          <p
+            className="data mt-5 inline-block rounded px-2.5 py-1 text-xs"
+            style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
+          >
+            {time} · {itensDoTime.length} itens carregados
+          </p>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
