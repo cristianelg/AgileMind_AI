@@ -39,6 +39,20 @@ test("regras por linha", () => {
   assert.match(motivosDe(ok.replace(",3,nao", ",abc,nao")), /story_points/);
 });
 
+test("coerência entre status e datas", () => {
+  assert.match(motivosDe(ok.replace(",2026-09-05,", ",,")), /status Concluído exige concluido_em/);
+  assert.match(motivosDe(ok.replace("Concluído", "Teste")), /concluido_em preenchido com status Teste/);
+  assert.match(motivosDe(ok.replace("Concluído", "Backlog")), /Backlog com iniciado_em/);
+  assert.match(motivosDe(ok.replace("Concluído,2026-09-01,2026-09-02,2026-09-05", "Em andamento,2026-09-01,,")), /Em andamento exige iniciado_em/);
+});
+
+test("bloqueado_desde coerente com bloqueado e com as datas", () => {
+  assert.match(motivosDe(ok.replace(",nao,,3", ",nao,2026-09-03,3")), /preenchido com bloqueado = nao/);
+  assert.match(motivosDe(ok.replace(",nao,,3", ",sim,2026-08-30,3")), /antes de criado_em/);
+  assert.match(motivosDe(ok.replace(",nao,,3", ",sim,2026-09-20,3")), /depois de concluido_em/);
+  assert.equal(validarCsv(csv(ok.replace(",nao,,3", ",sim,2026-09-03,3"))).invalidas.length, 0);
+});
+
 test("várias falhas na mesma linha aparecem juntas", () => {
   const r = validarCsv(csv(ok.replace("história", "x").replace("Concluído", "y")));
   assert.equal(r.invalidas[0].motivos.length, 2);

@@ -111,6 +111,23 @@ function validarLinha(obj) {
   if (obj.bloqueado === "sim" && vazio(obj.bloqueado_desde)) {
     motivos.push("bloqueado = sim exige bloqueado_desde");
   }
+  if (obj.bloqueado === "nao" && !vazio(obj.bloqueado_desde)) {
+    motivos.push("bloqueado_desde preenchido com bloqueado = nao");
+  }
+  const b = datasOk.bloqueado_desde;
+  if (b !== undefined && c !== undefined && b < c) motivos.push("bloqueado_desde antes de criado_em");
+  if (b !== undefined && f !== undefined && b > f) motivos.push("bloqueado_desde depois de concluido_em");
+
+  // Coerência entre status e datas: o WIP e o aging dependem das datas, não do status.
+  const iniciado = !vazio(obj.iniciado_em);
+  const concluido = !vazio(obj.concluido_em);
+  if (STATUS_VALIDOS.includes(obj.status)) {
+    if (obj.status === "Concluído" && !concluido) motivos.push("status Concluído exige concluido_em");
+    if (obj.status !== "Concluído" && concluido) motivos.push(`concluido_em preenchido com status ${obj.status}`);
+    if (obj.status === "Backlog" && iniciado) motivos.push("status Backlog com iniciado_em preenchido");
+    if (["Em andamento", "Code Review", "Teste", "Concluído"].includes(obj.status) && !iniciado)
+      motivos.push(`status ${obj.status} exige iniciado_em`);
+  }
 
   if (!vazio(obj.story_points)) {
     const n = Number(obj.story_points);
