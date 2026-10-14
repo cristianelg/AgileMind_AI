@@ -3,13 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f5f7f8;
+  --bg: #f1f5f6;
   --surface: #ffffff;
-  --fg: #14232b;
-  --muted: #55666f;
-  --line: #d6dee2;
+  --surface-2: #f6f9fa;
+  --fg: #12222a;
+  --muted: #526470;
+  --line: #d5dee2;
+  --line-strong: #a9b8c0;
   --accent: #0b6e79;
+  --on-accent: #ffffff;
   --accent-soft: #dcf0f2;
+  --bloco: #c5d1d7;
   --warn-bg: #fff1c7;
   --warn-fg: #5c4300;
   --warn-line: #e8c766;
@@ -20,18 +24,23 @@
   --ok-fg: #1d5a31;
   --bug: #b4540a;
   --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-num: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
   --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0e1a20;
-    --surface: #15262e;
+    --bg: #0c171c;
+    --surface: #13232a;
+    --surface-2: #182c35;
     --fg: #e6eef1;
     --muted: #9bb0b9;
-    --line: #2a404a;
+    --line: #26404b;
+    --line-strong: #3e5b68;
     --accent: #4fc3cf;
+    --on-accent: #06232a;
     --accent-soft: #123940;
+    --bloco: #38535f;
     --warn-bg: #3d3210;
     --warn-fg: #ffe28a;
     --warn-line: #7a6320;
@@ -62,9 +71,18 @@ body {
   color: var(--fg);
   font-family: var(--font-body);
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
+/* Números grandes dos indicadores: mesma família, versão condensada, algarismos tabulares. */
+.num {
+  font-family: var(--font-num);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* IDs de itens e valores de conferência. */
 .data {
   font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
@@ -75,8 +93,16 @@ body {
   outline-offset: 2px;
 }
 
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+    animation: none !important;
   }
 }

@@ -33,7 +33,7 @@ function Vazio({ children }) {
 function CaixaTooltip({ children }) {
   return (
     <div
-      className="rounded-md border px-3 py-2 text-xs shadow-sm"
+      className="rounded-md border px-3 py-2 text-xs shadow-md"
       style={{ background: "var(--surface)", borderColor: "var(--line)", color: "var(--fg)" }}
     >
       {children}
@@ -139,8 +139,8 @@ export function GraficoDispersao({ pontos, p85 }) {
         style={{ height: 280 }}
       >
         <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart margin={{ top: 16, right: 16, bottom: 4, left: 0 }}>
-            <CartesianGrid stroke="var(--line)" />
+          <ScatterChart margin={{ top: 16, right: 76, bottom: 4, left: 0 }}>
+            <CartesianGrid stroke="var(--line)" strokeOpacity={0.6} />
             <XAxis
               type="number"
               dataKey="dia"
@@ -177,7 +177,7 @@ export function GraficoDispersao({ pontos, p85 }) {
                 strokeDasharray="6 4"
                 label={{
                   value: `P85: ${fmtNum(p85)} ${p85 === 1 ? "dia" : "dias"}`,
-                  position: "insideTopRight",
+                  position: "right",
                   fill: "var(--fg)",
                   fontSize: 12,
                 }}

@@ -54,3 +54,7 @@ No Vercel: framework Vite, comando `npm run build`, pasta de saída `dist`.
 4. A IA só interpreta resultados já calculados e separa evidência de hipótese.
 5. Dados de demonstração sempre identificados.
 6. Nenhuma credencial ou chave de API no front-end.
+
+## Layout do Dashboard (incremento 5)
+
+Só apresentação, o motor de métricas não mudou. Indicadores numa faixa única com o WIP em destaque e uma fila de blocos contra o limite, filtros como controles segmentados, cada indicador diz na própria célula quais filtros o afetam, fórmula no "?" em balão, tabela de itens recolhível, rótulo do P85 fora da área de pontos.

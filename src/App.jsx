@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ITENS_DEMO, TIMES } from "./dados/csv.js";
 import PainelCalculos from "./componentes/PainelCalculos.jsx";
 import Dashboard from "./componentes/Dashboard.jsx";
+import TabelaItens from "./componentes/TabelaItens.jsx";
 
 // A data de referência é sempre um valor passado às funções de cálculo.
 // Aqui fica fixa na data dos dados demonstrativos, não no relógio do sistema.
@@ -29,20 +30,6 @@ const ABAS = [
   },
 ];
 
-const COLUNAS = [
-  { chave: "id", titulo: "ID", dado: true },
-  { chave: "tipo", titulo: "Tipo" },
-  { chave: "titulo", titulo: "Título" },
-  { chave: "status", titulo: "Status" },
-  { chave: "criado_em", titulo: "Criado em", dado: true },
-  { chave: "iniciado_em", titulo: "Iniciado em", dado: true },
-  { chave: "concluido_em", titulo: "Concluído em", dado: true },
-  { chave: "bloqueado", titulo: "Bloqueado" },
-  { chave: "bloqueado_desde", titulo: "Bloqueado desde", dado: true },
-  { chave: "story_points", titulo: "Pontos", numero: true, dado: true },
-  { chave: "adicionado_apos_inicio", titulo: "Adic. após início" },
-];
-
 export default function App() {
   const [time, setTime] = useState(TIMES[0]);
   const [aba, setAba] = useState("dashboard");
@@ -65,30 +52,41 @@ export default function App() {
           Dados demonstrativos · não são dados reais
         </div>
 
-        <div className="mx-auto w-full max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
           <div className="min-w-0">
             <h1 className="text-lg font-semibold leading-tight">AgileMind AI</h1>
             <p className="text-xs" style={{ color: "var(--muted)" }}>
               Os riscos da sua sprint, com evidência e ação
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <label htmlFor="seletor-time" className="text-sm" style={{ color: "var(--muted)" }}>
-              Time
-            </label>
-            <select
-              id="seletor-time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="rounded-md border px-3 py-1.5 text-sm"
-              style={{ background: "var(--surface)", color: "var(--fg)", borderColor: "var(--line)" }}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label htmlFor="seletor-time" className="text-sm font-medium" style={{ color: "var(--muted)" }}>
+                Time
+              </label>
+              <select
+                id="seletor-time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="rounded-md border px-3 py-1.5 text-sm"
+                style={{ background: "var(--surface)", color: "var(--fg)", borderColor: "var(--line-strong)" }}
+              >
+                {TIMES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              aria-haspopup="dialog"
+              onClick={() => setCalculosAbertos(true)}
+              className="rounded-md px-3 py-1.5 text-sm font-medium"
+              style={{ background: "var(--accent)", color: "var(--on-accent)" }}
             >
-              {TIMES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
+              Ver cálculos
+            </button>
           </div>
         </div>
 
@@ -104,7 +102,7 @@ export default function App() {
                   aria-selected={ativa}
                   aria-controls="painel"
                   onClick={() => setAba(a.id)}
-                  className="whitespace-nowrap px-4 py-2.5 text-sm font-medium border-b-2 -mb-px"
+                  className="whitespace-nowrap px-4 py-2.5 text-sm font-medium border-b-[3px] -mb-px"
                   style={{
                     color: ativa ? "var(--accent)" : "var(--muted)",
                     borderColor: ativa ? "var(--accent)" : "transparent",
@@ -118,25 +116,7 @@ export default function App() {
         </nav>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-6 flex-1">
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <p
-            className="data inline-block rounded px-2.5 py-1 text-xs"
-            style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
-          >
-            {time} · {itensDoTime.length} itens carregados
-          </p>
-          <button
-            type="button"
-            aria-haspopup="dialog"
-            onClick={() => setCalculosAbertos(true)}
-            className="rounded-md border px-3 py-1.5 text-sm font-medium"
-            style={{ borderColor: "var(--accent)", color: "var(--accent)", background: "var(--surface)" }}
-          >
-            Ver cálculos
-          </button>
-        </div>
-
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-5">
         <div id="painel" role="tabpanel" aria-labelledby={"aba-" + aba}>
           {aba === "dashboard" ? (
             <Dashboard
@@ -158,56 +138,7 @@ export default function App() {
           )}
         </div>
 
-        <section
-          aria-labelledby="titulo-itens"
-          className="mt-6 rounded-lg border"
-          style={{ background: "var(--surface)", borderColor: "var(--line)" }}
-        >
-          <div className="px-5 pt-4 pb-3">
-            <h2 id="titulo-itens" className="text-base font-semibold">
-              Itens do time
-            </h2>
-            <p className="text-xs" style={{ color: "var(--muted)" }}>
-              {time} · {itensDoTime.length} itens · dados demonstrativos
-            </p>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm" style={{ borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ color: "var(--muted)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
-                  {COLUNAS.map((c) => (
-                    <th
-                      key={c.chave}
-                      scope="col"
-                      className={"px-3 py-2 text-xs font-medium whitespace-nowrap " + (c.numero ? "text-right" : "text-left")}
-                    >
-                      {c.titulo}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {itensDoTime.map((item) => (
-                  <tr key={item.id} style={{ borderBottom: "1px solid var(--line)" }}>
-                    {COLUNAS.map((c) => (
-                      <td
-                        key={c.chave}
-                        className={
-                          "px-3 py-2 whitespace-nowrap " +
-                          (c.numero ? "text-right " : "") +
-                          (c.dado ? "data text-xs" : "")
-                        }
-                        style={c.chave === "id" ? { color: "var(--accent)" } : undefined}
-                      >
-                        {item[c.chave] ?? "—"}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        <TabelaItens time={time} itens={itensDoTime} />
       </main>
 
       {calculosAbertos && (
