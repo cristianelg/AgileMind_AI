@@ -45,6 +45,11 @@
   }
 }
 
+/* Garante que o atributo hidden esconda o elemento mesmo com classes de display do Tailwind. */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body,
 #root {

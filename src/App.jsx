@@ -93,7 +93,7 @@ export default function App() {
         </div>
 
         <nav aria-label="Seções" className="mx-auto w-full max-w-6xl px-4">
-          <div role="tablist" className="flex gap-1 overflow-x-auto">
+          <div role="tablist" className="flex gap-1 overflow-x-auto overflow-y-hidden">
             {ABAS.map((a) => {
               const ativa = a.id === aba;
               return (
