@@ -58,3 +58,7 @@ No Vercel: framework Vite, comando `npm run build`, pasta de saída `dist`.
 ## Layout do Dashboard (incremento 5)
 
 Só apresentação, o motor de métricas não mudou. Indicadores numa faixa única com o WIP em destaque e uma fila de blocos contra o limite, filtros como controles segmentados, cada indicador diz na própria célula quais filtros o afetam, fórmula no "?" em balão, tabela de itens recolhível, rótulo do P85 fora da área de pontos.
+
+## Importação de CSV (incremento 6)
+
+Upload de arquivo ou texto colado, validado linha a linha em `src/dados/validarCsv.js` (função pura, com testes). Cabeçalho incompleto recusa o arquivo. Linha inválida fica fora dos cálculos e aparece na lista com número da linha (cabeçalho é a linha 1), id e motivos. Aceita vírgula ou ponto e vírgula e campos entre aspas. "Restaurar demonstração" volta ao CSV de exemplo e à data de referência original. Os dados ficam só em memória: recarregar a página volta ao exemplo.

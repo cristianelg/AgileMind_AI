@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
-import { ITENS_DEMO, TIMES } from "./dados/csv.js";
+import { ITENS_DEMO } from "./dados/csv.js";
+import { validarCsv } from "./dados/validarCsv.js";
+import ImportarCsv from "./componentes/ImportarCsv.jsx";
 import PainelCalculos from "./componentes/PainelCalculos.jsx";
 import Dashboard from "./componentes/Dashboard.jsx";
 import TabelaItens from "./componentes/TabelaItens.jsx";
@@ -31,11 +33,39 @@ const ABAS = [
 ];
 
 export default function App() {
-  const [time, setTime] = useState(TIMES[0]);
+  // Estado em memória. `dados` é o conjunto em uso; `relatorio` guarda o resultado da última importação.
+  const [dados, setDados] = useState({ itens: ITENS_DEMO, demo: true });
+  const [relatorio, setRelatorio] = useState(null);
+  const [dataReferencia, setDataReferencia] = useState(DATA_REFERENCIA);
+  const [timeEscolhido, setTime] = useState(null);
   const [aba, setAba] = useState("dashboard");
   const [calculosAbertos, setCalculosAbertos] = useState(false);
 
-  const itensDoTime = useMemo(() => ITENS_DEMO.filter((i) => i.time === time), [time]);
+  const TIMES = useMemo(() => [...new Set(dados.itens.map((i) => i.time))], [dados]);
+  const time = TIMES.includes(timeEscolhido) ? timeEscolhido : TIMES[0];
+  const itensDoTime = useMemo(() => dados.itens.filter((i) => i.time === time), [dados, time]);
+
+  function importar(texto, nome) {
+    if (texto === null) {
+      setRelatorio({ nome, leituraFalhou: true, avisos: [], aplicado: false, resultado: null });
+      return;
+    }
+    const resultado = validarCsv(texto);
+    const aplicado = !resultado.erro && resultado.itens.length > 0;
+    const avisos = texto.includes("\uFFFD")
+      ? ["O texto tem caracteres ilegíveis. O arquivo provavelmente não está em UTF-8, salve-o assim e importe de novo."]
+      : [];
+    if (aplicado) setDados({ itens: resultado.itens, demo: false });
+    setRelatorio({ nome, leituraFalhou: false, avisos, aplicado, resultado });
+  }
+
+  function restaurar() {
+    setDados({ itens: ITENS_DEMO, demo: true });
+    setDataReferencia(DATA_REFERENCIA);
+    setRelatorio(null);
+    setTime(null);
+  }
+
   const atual = ABAS.find((a) => a.id === aba);
 
   return (
@@ -47,9 +77,11 @@ export default function App() {
         <div
           role="status"
           className="px-4 py-1.5 text-center text-xs font-medium tracking-wide border-b"
-          style={{ background: "var(--warn-bg)", color: "var(--warn-fg)", borderColor: "var(--warn-line)" }}
+          style={dados.demo ? { background: "var(--warn-bg)", color: "var(--warn-fg)", borderColor: "var(--warn-line)" } : { background: "var(--accent-soft)", color: "var(--fg)", borderColor: "var(--line)" }}
         >
-          Dados demonstrativos · não são dados reais
+          {dados.demo
+            ? "Dados demonstrativos · não são dados reais"
+            : `Dados importados de ${relatorio.nome} · ${dados.itens.length} ${dados.itens.length === 1 ? "item válido" : "itens válidos"}`}
         </div>
 
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
@@ -117,12 +149,21 @@ export default function App() {
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-5">
+        <ImportarCsv
+          relatorio={relatorio}
+          origemDemo={dados.demo}
+          dataReferencia={dataReferencia}
+          onDataReferencia={setDataReferencia}
+          onImportar={importar}
+          onRestaurar={restaurar}
+        />
+
         <div id="painel" role="tabpanel" aria-labelledby={"aba-" + aba}>
           {aba === "dashboard" ? (
             <Dashboard
               time={time}
               itens={itensDoTime}
-              dataReferencia={DATA_REFERENCIA}
+              dataReferencia={dataReferencia}
               janelaThroughput={JANELA_THROUGHPUT_DIAS}
             />
           ) : (
@@ -145,7 +186,7 @@ export default function App() {
         <PainelCalculos
           time={time}
           itens={itensDoTime}
-          dataReferencia={DATA_REFERENCIA}
+          dataReferencia={dataReferencia}
           janelaDias={JANELA_THROUGHPUT_DIAS}
           onFechar={() => setCalculosAbertos(false)}
         />
