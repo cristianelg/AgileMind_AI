@@ -62,3 +62,7 @@ Só apresentação, o motor de métricas não mudou. Indicadores numa faixa úni
 ## Importação de CSV (incremento 6)
 
 Upload de arquivo ou texto colado, validado linha a linha em `src/dados/validarCsv.js` (função pura, com testes). Cabeçalho incompleto recusa o arquivo. Linha inválida fica fora dos cálculos e aparece na lista com número da linha (cabeçalho é a linha 1), id e motivos. Aceita vírgula ou ponto e vírgula e campos entre aspas. "Restaurar demonstração" volta ao CSV de exemplo e à data de referência original. Os dados ficam só em memória: recarregar a página volta ao exemplo.
+
+## Radar de Riscos (incremento 7)
+
+Sem IA. `src/riscos/regras.js` (função pura) avalia R1 a R5 sobre as métricas do motor, com a data de referência como parâmetro. R1 e R2 geram um risco por item, R3, R4 e R5 um risco por regra. Ordem: severidade (alta antes de média), depois código da regra, depois magnitude dentro da regra. Os três primeiros aparecem em "Os 3 riscos da sprint". O painel "Regras" muda os limites (o limite de WIP é o mesmo do Dashboard). Responsável e prazo ficam só em memória. R5 considera todos os itens com adicionado_apos_inicio = sim, em qualquer status. O P85 de R1 usa todos os itens concluídos do time, sem filtro de tipo ou período.

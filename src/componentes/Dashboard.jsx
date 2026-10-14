@@ -46,10 +46,9 @@ function BlocoGrafico({ titulo, descricao, className = "", children }) {
   );
 }
 
-export default function Dashboard({ time, itens, dataReferencia, janelaThroughput }) {
+export default function Dashboard({ time, itens, dataReferencia, janelaThroughput, limiteTexto, onLimiteTexto }) {
   const [tipo, setTipo] = useState("todos");
   const [periodoId, setPeriodoId] = useState("tudo");
-  const [limiteTexto, setLimiteTexto] = useState(String(LIMITE_PADRAO));
 
   const limiteValido = /^[1-9]\d{0,2}$/.test(limiteTexto);
   const limite = limiteValido ? Number(limiteTexto) : LIMITE_PADRAO;
@@ -99,7 +98,7 @@ export default function Dashboard({ time, itens, dataReferencia, janelaThroughpu
               type="text"
               inputMode="numeric"
               value={limiteTexto}
-              onChange={(e) => setLimiteTexto(e.target.value.trim())}
+              onChange={(e) => onLimiteTexto(e.target.value.trim())}
               aria-invalid={!limiteValido}
               aria-describedby={limiteValido ? undefined : "erro-limite"}
               className="data w-16 rounded-md border px-2 py-1.5 text-center text-sm"

@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { ITENS_DEMO } from "./dados/csv.js";
 import { validarCsv } from "./dados/validarCsv.js";
 import ImportarCsv from "./componentes/ImportarCsv.jsx";
+import RadarRiscos from "./componentes/RadarRiscos.jsx";
+import { TEXTOS_PADRAO } from "./riscos/config.js";
 import PainelCalculos from "./componentes/PainelCalculos.jsx";
 import Dashboard from "./componentes/Dashboard.jsx";
 import TabelaItens from "./componentes/TabelaItens.jsx";
@@ -38,6 +40,9 @@ export default function App() {
   const [relatorio, setRelatorio] = useState(null);
   const [dataReferencia, setDataReferencia] = useState(DATA_REFERENCIA);
   const [timeEscolhido, setTime] = useState(null);
+  // Limites das regras: o limite de WIP é um só, usado pelo Dashboard e pelo Radar de Riscos.
+  const [textosRegras, setTextosRegras] = useState(TEXTOS_PADRAO);
+  const [anotacoes, setAnotacoes] = useState({});
   const [aba, setAba] = useState("dashboard");
   const [calculosAbertos, setCalculosAbertos] = useState(false);
 
@@ -165,6 +170,18 @@ export default function App() {
               itens={itensDoTime}
               dataReferencia={dataReferencia}
               janelaThroughput={JANELA_THROUGHPUT_DIAS}
+              limiteTexto={textosRegras.limiteWip}
+              onLimiteTexto={(v) => setTextosRegras((t) => ({ ...t, limiteWip: v }))}
+            />
+          ) : aba === "riscos" ? (
+            <RadarRiscos
+              time={time}
+              itens={itensDoTime}
+              dataReferencia={dataReferencia}
+              textos={textosRegras}
+              onTextos={setTextosRegras}
+              anotacoes={anotacoes}
+              onAnotacao={(chave, parcial) => setAnotacoes((a) => ({ ...a, [chave]: { ...a[chave], ...parcial } }))}
             />
           ) : (
             <section
